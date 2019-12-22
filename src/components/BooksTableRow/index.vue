@@ -15,12 +15,15 @@
 </template>
 
 <script>
+import { validation } from '@/utils'
+
 export default {
   name: 'BooksTableRow',
   props: {
     book: {
       type: Object,
-      required: true
+      required: true,
+      validator: validation.book.validateBook
     }
   }
 }
