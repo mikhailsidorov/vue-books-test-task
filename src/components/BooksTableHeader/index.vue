@@ -5,8 +5,8 @@
       :key="key"
       class="books-table-header__cell"
       :class="{
-        up: cellNames[key].sorting && cellNames[key].sortingType === 'up',
-        down: cellNames[key].sorting && cellNames[key].sortingType === 'down',
+        ascending: isAscending(key),
+        descending: isDescending(key),
         sorting: cellNames[key].sorting
       }"
       @click="cellNames[key].sorting ? handleClick(key) : null"
@@ -19,32 +19,21 @@
 <script>
 export default {
   name: 'BooksTableHeader',
-  data() {
-    return {
-      cellNames: {
-        title: { sorting: true, sortingType: null, name: 'Название' },
-        author: { name: 'Автор' },
-        numberOfPages: { name: 'Количество страниц' },
-        publishingHouse: { name: 'Издательство' },
-        publishingYear: { sorting: true, sortingType: null, name: 'Год издания' },
-        releaseDate: { name: 'Дата выхода в тираж' },
-        image: { name: 'Картинка' }
-      }
+  props: {
+    cellNames: {
+      type: Object,
+      required: true
     }
   },
   methods: {
     handleClick(key) {
-      console.log(key)
-      if (!this.cellNames[key].sortingType) {
-        this.cellNames[key].sortingType = 'up'
-      } else {
-        if (this.cellNames[key].sortingType === 'up') {
-          this.cellNames[key].sortingType = 'down'
-        } else {
-          this.cellNames[key].sortingType = null
-        }
-      }
-      this.$emit('click', [key, this.cellNames[key].sortingType])
+      this.$emit('sorting-switch', key)
+    },
+    isAscending(key) {
+      return this.cellNames[key].sorting && this.cellNames[key].sortingType === 'ascending'
+    },
+    isDescending(key) {
+      return this.cellNames[key].sorting && this.cellNames[key].sortingType === 'descending'
     }
   }
 }
@@ -59,11 +48,11 @@ export default {
     display: table-cell;
     vertical-align: middle;
     position: relative;
-    cursor: pointer;
   }
 }
-
 .sorting {
+  cursor: pointer;
+
   &::before,
   &::after {
     position: absolute;
@@ -82,8 +71,8 @@ export default {
     content: '▼';
     transform: translateY(0px);
   }
-  &.up::before,
-  &.down::after {
+  &.ascending::before,
+  &.descending::after {
     color: black;
   }
 }
