@@ -1,7 +1,13 @@
 <template>
   <div class="books-table">
+    <button class="button-add-new" @click="handleAddClick">Add new</button>
     <BooksTableHeader @sorting-switch="handleSortingSwitch" :cellNames="cellNames" />
-    <BooksTableRow v-for="book in sortedBooks" :key="book.id" :book="book" />
+    <BooksTableRow
+      v-for="(book, index) in sortedBooks"
+      :key="book.id"
+      :book="book"
+      :class="{ 'odd-row': index % 2 === 0 }"
+    />
   </div>
 </template>
 
@@ -65,6 +71,10 @@ export default {
       }
     },
 
+    handleAddClick() {
+      console.log('Add click')
+    },
+
     sortBooksByPublishingYear(books, ascending = true) {
       let compareFunction
       if (ascending) {
@@ -100,5 +110,24 @@ export default {
   margin: 0 auto;
   display: table;
   text-align: left;
+}
+
+.odd-row {
+  background: #f2f2f2;
+}
+
+.button-add-new {
+  border: none;
+  border-radius: 8px;
+  padding: 10px 20px;
+  background: #71b76c;
+  font-weight: bold;
+  font-size: inherit;
+  color: white;
+
+  &:hover {
+    cursor: pointer;
+    background: #5ea072;
+  }
 }
 </style>

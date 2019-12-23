@@ -11,6 +11,10 @@
         <img class="book-image" :src="book.image" />
       </figure>
     </div>
+    <div class="books-table-cell">
+      <button class="button-action" @click="handleEditClick(book.id)">Edit</button>
+      <button class="button-action" @click="handleDeleteClick(book.id)">Delete</button>
+    </div>
   </div>
 </template>
 
@@ -25,17 +29,30 @@ export default {
       required: true,
       validator: validation.book.validateBook
     }
+  },
+  methods: {
+    handleAddClick(bookId) {
+      console.log(bookId)
+      this.$emit('add', bookId)
+    },
+    handleEditClick(bookId) {
+      this.$emit('edit', bookId)
+      console.log(bookId)
+    },
+    handleDeleteClick(bookId) {
+      console.log(bookId)
+    }
   }
 }
 </script>
 
-<style>
+<style lang="scss" scoped>
 .books-table-row {
   display: table-row;
 }
 
 .books-table-cell {
-  padding: 10px 10px 10px 0;
+  padding: 10px 10px 10px 10px;
   display: table-cell;
   vertical-align: middle;
 }
@@ -49,5 +66,17 @@ export default {
 .book-image {
   width: 100%;
   height: 100%;
+}
+
+.button-action {
+  font-weight: bold;
+  margin-right: 10px;
+  cursor: pointer;
+  border: none;
+  font-size: inherit;
+  background: transparent;
+  &:hover {
+    text-decoration: underline;
+  }
 }
 </style>

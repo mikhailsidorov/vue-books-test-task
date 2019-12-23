@@ -48,6 +48,7 @@ export default {
     display: table-cell;
     vertical-align: middle;
     position: relative;
+    padding: 10px 30px 10px 10px;
   }
 }
 .sorting {
