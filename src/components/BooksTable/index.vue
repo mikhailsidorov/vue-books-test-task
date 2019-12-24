@@ -1,28 +1,38 @@
 <template>
   <div class="books-table">
+    <Modal v-if="showModal" @close="showModal = false">
+      <BookForm @cancel="showModal = false" @add-book="handleAddBook" />
+    </Modal>
     <button class="button-add-new" @click="handleAddClick">Add new</button>
     <BooksTableHeader @sorting-switch="handleSortingSwitch" :cellNames="cellNames" />
     <BooksTableRow
       v-for="(book, index) in sortedBooks"
       :key="book.id"
       :book="book"
-      :class="{ 'odd-row': index % 2 === 0 }"
+      :class="{ 'odd-row': isOdd(index) }"
     />
   </div>
 </template>
 
 <script>
+import { mapMutations } from 'vuex'
+
 import BooksTableHeader from '../BooksTableHeader'
 import BooksTableRow from '../BooksTableRow'
+import BookForm from '../BookForm'
+import Modal from '../Modal'
 
 export default {
   name: 'BooksTable',
   components: {
     BooksTableHeader,
-    BooksTableRow
+    BooksTableRow,
+    BookForm,
+    Modal
   },
   data() {
     return {
+      showModal: false,
       cellNames: {
         title: { sorting: true, sortingType: null, name: 'Название' },
         author: { name: 'Автор' },
@@ -72,7 +82,13 @@ export default {
     },
 
     handleAddClick() {
-      console.log('Add click')
+      this.showModal = true
+    },
+
+    handleAddBook(book) {
+      console.log(book)
+      this.addBook(book)
+      this.showModal = false
     },
 
     sortBooksByPublishingYear(books, ascending = true) {
@@ -99,7 +115,11 @@ export default {
         }
       }
       return books.sort(compareFunction)
-    }
+    },
+    isOdd(number) {
+      return number % 2 === 0
+    },
+    ...mapMutations(['addBook'])
   }
 }
 </script>
