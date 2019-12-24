@@ -19,7 +19,7 @@
 </template>
 
 <script>
-import { validation } from '@/utils'
+import { validateBook } from '@/utils/validation/book'
 
 export default {
   name: 'BooksTableRow',
@@ -27,17 +27,12 @@ export default {
     book: {
       type: Object,
       required: true,
-      validator: validation.book.validateBook
+      validator: validateBook
     }
   },
   methods: {
-    handleAddClick(bookId) {
-      console.log(bookId)
-      this.$emit('add', bookId)
-    },
     handleEditClick(bookId) {
       this.$emit('edit', bookId)
-      console.log(bookId)
     },
     handleDeleteClick(bookId) {
       console.log(bookId)
