@@ -1,16 +1,19 @@
 <template>
   <div class="books-table">
-    <Modal v-if="showModal" @close="showModal = false">
-      <BookForm @cancel="showModal = false" @add-book="handleAddBook" />
+    <Modal v-if="showModal">
+      <BookForm @cancel="handleCloseForm" @add-book="handleAddBook" />
     </Modal>
     <button class="button-add-new" @click="handleAddClick">Add new</button>
-    <BooksTableHeader @sorting-switch="handleSortingSwitch" :cellNames="cellNames" />
-    <BooksTableRow
-      v-for="(book, index) in sortedBooks"
-      :key="book.id"
-      :book="book"
-      :class="{ 'odd-row': isOdd(index) }"
-    />
+    <template v-if="booksExists">
+      <BooksTableHeader @sorting-switch="handleSortingSwitch" :cellNames="cellNames" />
+      <BooksTableRow
+        v-for="(book, index) in sortedBooks"
+        :key="book.id"
+        :book="book"
+        :class="{ 'odd-row': isOdd(index) }"
+      />
+    </template>
+    <div v-if="!booksExists" class="books-table__no-books">Ничего нет. Добавьте книги.</div>
   </div>
 </template>
 
@@ -66,6 +69,9 @@ export default {
         books = this.sortBooksByPublishingYear(books, false)
       }
       return books
+    },
+    booksExists() {
+      return Boolean(this.sortedBooks.length)
     }
   },
   methods: {
@@ -86,11 +92,13 @@ export default {
     },
 
     handleAddBook(book) {
-      console.log(book)
       this.addBook(book)
       this.showModal = false
     },
 
+    handleCloseForm() {
+      this.showModal = false
+    },
     sortBooksByPublishingYear(books, ascending = true) {
       let compareFunction
       if (ascending) {
@@ -130,6 +138,13 @@ export default {
   margin: 0 auto;
   display: table;
   text-align: left;
+
+  &__no-books {
+    width: 100%;
+    text-align: center;
+    padding: 20px;
+    box-sizing: border-box;
+  }
 }
 
 .odd-row {
