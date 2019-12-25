@@ -7,7 +7,7 @@ export default {
     addBook(state, book) {
       state.list.push(book)
     },
-    removeBook(state, bookId) {
+    deleteBook(state, bookId) {
       const index = state.list.findIndex(book => {
         return book.id === bookId
       })

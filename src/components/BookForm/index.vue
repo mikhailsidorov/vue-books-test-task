@@ -76,6 +76,7 @@
 
 <script>
 import { book as bookValidation } from '@/mixins/validation/'
+import uuid from 'node-uuid'
 
 export default {
   name: 'BookForm',
@@ -83,6 +84,7 @@ export default {
   data() {
     return {
       form: {
+        id: '',
         title: { value: '', touched: false },
         author: {
           firstName: { value: '', touched: false },
@@ -128,6 +130,9 @@ export default {
     newBook() {
       const book = {}
       for (let field of Object.keys(this.form)) {
+        if (field === 'id' && !this.form[field]) {
+          book[field] = uuid.v4()
+        }
         if (field === 'author') {
           book[field] = {}
           book[field].firstName = this.form[field].firstName.value
