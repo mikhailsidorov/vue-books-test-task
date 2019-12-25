@@ -35,7 +35,7 @@ export default {
       this.$emit('edit', bookId)
     },
     handleDeleteClick(bookId) {
-      console.log(bookId)
+      this.$emit('delete', bookId)
     }
   }
 }

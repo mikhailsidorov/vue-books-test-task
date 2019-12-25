@@ -11,6 +11,7 @@
         :key="book.id"
         :book="book"
         :class="{ 'odd-row': isOdd(index) }"
+        @delete="handleRowDelete"
       />
     </template>
     <div v-if="!booksExists" class="books-table__no-books">Ничего нет. Добавьте книги.</div>
@@ -86,18 +87,18 @@ export default {
         }
       }
     },
-
     handleAddClick() {
       this.showModal = true
     },
-
     handleAddBook(book) {
       this.addBook(book)
       this.showModal = false
     },
-
     handleCloseForm() {
       this.showModal = false
+    },
+    handleRowDelete(bookId) {
+      this.deleteBook(bookId)
     },
     sortBooksByPublishingYear(books, ascending = true) {
       let compareFunction
@@ -127,7 +128,7 @@ export default {
     isOdd(number) {
       return number % 2 === 0
     },
-    ...mapMutations(['addBook'])
+    ...mapMutations(['addBook', 'deleteBook'])
   }
 }
 </script>
