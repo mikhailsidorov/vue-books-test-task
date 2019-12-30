@@ -8,22 +8,30 @@ const router = express.Router()
 
 router.post('/', async (req, res) => {
   try {
-    if (req.files && req.body.bookId) {
-      let image = res.files.image
-      let imageFileName = path.join(IMAGES_DIR, req.body.bookId)
+    if (req.files && req.body.id) {
+      let image = req.files.image
+      let imageFileName = path.join(IMAGES_DIR, req.body.id)
       image.mv(imageFileName)
 
       const resourceUrl = url.format({
         protocol: req.protocol,
         host: req.get('host'),
-        pathname: req.originalUrl + req.body.bookId
+        pathname: req.originalUrl + req.body.id
       })
+
+      const imageUrl = url.format({
+        protocol: req.protocol,
+        host: req.get('host'),
+        pathname: '/images/' + req.body.id
+      })
+
       res.location(resourceUrl)
-      res.status(201).send({url: resourceUrl})
+      res.status(201).send({ url: imageUrl })
     } else {
       res.status(400).send({ status: 'Bad request' })
     }
   } catch (error) {
+    console.log(error)
     res.status(500).send(error)
   }
 })
