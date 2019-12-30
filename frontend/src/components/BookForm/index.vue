@@ -67,7 +67,7 @@
     </div>
     <label class="book-form__field">
       Картинка
-      <input class="book-form__input" type="file" name="image" />
+      <input class="book-form__input" type="file" name="image" ref="imageFile" @change="handleFileChange" />
     </label>
     <button class="button book-form__button-save" @click="handleSaveClick">Сохранить</button>
     <button class="button book-form__button-cancel" @click="handleCancelClick">Отмена</button>
@@ -77,6 +77,7 @@
 <script>
 import { book as bookValidation } from '@/mixins/validation/'
 import { v4 as uuidV4 } from 'node-uuid'
+import axios from '../../axios'
 
 export default {
   name: 'BookForm',
@@ -93,7 +94,7 @@ export default {
         publishingHouse: { value: '', touched: false },
         publishingYear: { value: '', touched: false },
         releaseDate: { value: '', touched: false },
-        image: { value: '', touched: false }
+        image: { value: '', touched: false, file: '' }
       }
     }
   },
@@ -152,7 +153,11 @@ export default {
     handleCancelClick() {
       this.$emit('cancel')
     },
-    handleSaveClick() {
+    handleFileChange() {
+      this.form.image.file = this.$refs.imageFile.files[0]
+      this.form.image.touched = true
+    },
+    async handleSaveClick() {
       if (
         !this.validateTitle(this.form.title.value) ||
         !this.validateAuthorFirstName(this.form.author.firstName.value) ||
@@ -164,6 +169,24 @@ export default {
       ) {
         return
       }
+      const formData = new FormData()
+      if (this.form.image.touched && this.form.image.file) {
+        formData.append('image', this.form.image.file)
+        formData.append('id', this.newBookData.id)
+      }
+      try {
+        const response = await axios.post('/images/', formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data'
+          }
+        })
+        if (response.data && response.data.url) {
+          this.form.image.value = response.data.url
+        }
+      } catch (error) {
+        console.log(error)
+      }
+
       this.$emit('save-book', this.newBookData)
     }
   },

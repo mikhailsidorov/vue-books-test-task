@@ -21,9 +21,9 @@ app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({extended: false}))
 app.use(fileUpload({createParentPath: true}))
 app.use(cors(corsOptions))
-app.use('/images', express.static(IMAGES_DIR))
+app.use('/images/', express.static(IMAGES_DIR))
 
-app.use('/api/images', imageRoutes)
+app.use('/api/images/', imageRoutes)
 
 const port = process.env.PORT || 3000
 
