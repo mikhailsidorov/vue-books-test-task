@@ -18,11 +18,11 @@ const store = new Vuex.Store({
     loadState({ commit }) {
       const savedState = localStorage.getItem('state')
       if (savedState) {
-        commit('updateState', JSON.parse(JSON.parse(savedState)))
+        commit('updateState', JSON.parse(savedState))
       }
     },
     saveState(context, newState) {
-      const newStateString = JSON.stringify(newState)
+      let newStateString = typeof newState !== 'string' ? JSON.stringify(newState) : newState
       localStorage.setItem('state', newStateString)
     }
   }

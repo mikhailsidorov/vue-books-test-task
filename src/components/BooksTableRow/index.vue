@@ -12,8 +12,8 @@
       </figure>
     </div>
     <div class="books-table-cell">
-      <button class="button-action" @click="handleEditClick(book.id)">Edit</button>
-      <button class="button-action" @click="handleDeleteClick(book.id)">Delete</button>
+      <button class="button-action" @click="handleEditClick">Редактировать</button>
+      <button class="button-action" @click="handleDeleteClick(book.id)">Удалить</button>
     </div>
   </div>
 </template>
@@ -28,11 +28,15 @@ export default {
       type: Object,
       required: true,
       validator: validateBook
+    },
+    bookId: {
+      type: String,
+      required: true
     }
   },
   methods: {
-    handleEditClick(bookId) {
-      this.$emit('edit', bookId)
+    handleEditClick() {
+      this.$emit('edit', { id: this.bookId, book: this.book })
     },
     handleDeleteClick(bookId) {
       this.$emit('delete', bookId)

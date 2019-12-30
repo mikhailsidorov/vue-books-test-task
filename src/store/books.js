@@ -1,23 +1,25 @@
 export default {
   state: {
-    list: []
+    books: {},
+    booksIdList: []
   },
-  actions: {},
   mutations: {
-    addBook(state, book) {
-      state.list.push(book)
-    },
     deleteBook(state, bookId) {
-      const index = state.list.findIndex(book => {
-        return book.id === bookId
-      })
-      state.list.splice(index, 1)
+      const index = state.booksIdList.findIndex(item => item === bookId)
+      if (index >= 0) {
+        state.booksIdList.splice(index, 1)
+      }
+      if (Object.keys(state.books).includes(bookId)) {
+        let books = { ...state.books }
+        delete books[bookId]
+        state.books = books
+      }
     },
-    updateBook(state, bookId, newData) {
-      const index = state.list.findIndex(book => {
-        return book.id === bookId
-      })
-      state.list[index] = { ...this.state.list[index], ...newData }
+    addUpdateBook(state, bookData) {
+      if (!state.booksIdList.includes(bookData.id)) {
+        state.booksIdList.push(bookData.id)
+      }
+      state.books[bookData.id] = bookData.book
     }
   }
 }

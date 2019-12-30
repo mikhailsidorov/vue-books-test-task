@@ -1,7 +1,7 @@
 <template>
   <div class="books">
     Books
-    <BooksTable :books="booksList" />
+    <BooksTable :books="books" :booksIdList="booksIdList" />
   </div>
 </template>
 
@@ -17,7 +17,8 @@ export default {
   },
   computed: {
     ...mapState({
-      booksList: state => state.books.list
+      booksIdList: state => state.books.booksIdList,
+      books: state => state.books.books
     })
   }
 }
