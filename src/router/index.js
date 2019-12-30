@@ -11,11 +11,6 @@ const routes = [
     component: Home
   },
   {
-    path: '/books/id',
-    name: 'booksDetail',
-    component: () => import('../views/BooksDetail.vue')
-  },
-  {
     path: '/books',
     name: 'books',
     component: () => import('../views/Books.vue')
