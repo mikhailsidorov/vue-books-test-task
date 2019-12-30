@@ -1,17 +1,19 @@
 <template>
   <div class="books-table">
     <Modal v-if="showModal">
-      <BookForm @cancel="handleCloseForm" @add-book="handleAddBook" />
+      <BookForm @cancel="handleCloseForm" @save-book="handleSaveBook" :editedBookData="editedBookData" />
     </Modal>
-    <button class="button-add-new" @click="handleAddClick">Add new</button>
+    <button class="button-add-new" @click="handleAddClick">Добавить</button>
     <template v-if="booksExists">
       <BooksTableHeader @sorting-switch="handleSortingSwitch" :cellNames="cellNames" />
       <BooksTableRow
-        v-for="(book, index) in sortedBooks"
-        :key="book.id"
-        :book="book"
+        v-for="(bookId, index) in sortedBooksIdList"
+        :key="bookId"
+        :book="books[bookId]"
         :class="{ 'odd-row': isOdd(index) }"
-        @delete="handleRowDelete"
+        @delete="handleRowDelete(bookId)"
+        @edit="handleRowEdit"
+        :bookId="bookId"
       />
     </template>
     <div v-if="!booksExists" class="books-table__no-books">Ничего нет. Добавьте книги.</div>
@@ -45,34 +47,40 @@ export default {
         publishingYear: { sorting: true, sortingType: null, name: 'Год издания' },
         releaseDate: { name: 'Дата выхода в тираж' },
         image: { name: 'Картинка' }
-      }
+      },
+      isEditMode: false,
+      editedBookData: null
     }
   },
   props: {
     books: {
+      type: Object,
+      required: true
+    },
+    booksIdList: {
       type: Array,
       required: true
     }
   },
   computed: {
-    sortedBooks() {
-      let books = [...this.books]
+    sortedBooksIdList() {
+      let booksIdList = [...this.booksIdList]
 
       if (this.cellNames.title.sortingType === 'ascending') {
-        books.sort((book1, book2) => book1.title.localeCompare(book2.title))
+        booksIdList.sort((bookId1, bookId2) => this.books[bookId1].title.localeCompare(this.books[bookId2].title))
       } else if (this.cellNames.title.sortingType === 'descending') {
-        books.sort((book1, book2) => book2.title.localeCompare(book1.title))
+        booksIdList.sort((bookId1, bookId2) => this.books[bookId2].title.localeCompare(this.books[bookId1].title))
       }
 
       if (this.cellNames.publishingYear.sortingType === 'ascending') {
-        books = this.sortBooksByPublishingYear(books)
+        booksIdList = this.sortBooksByPublishingYear(booksIdList)
       } else if (this.cellNames.publishingYear.sortingType === 'descending') {
-        books = this.sortBooksByPublishingYear(books, false)
+        booksIdList = this.sortBooksByPublishingYear(booksIdList, false)
       }
-      return books
+      return booksIdList
     },
     booksExists() {
-      return Boolean(this.sortedBooks.length)
+      return Boolean(this.sortedBooksIdList.length)
     }
   },
   methods: {
@@ -87,48 +95,65 @@ export default {
         }
       }
     },
+
     handleAddClick() {
       this.showModal = true
     },
-    handleAddBook(book) {
-      this.addBook(book)
+
+    handleSaveBook(bookData) {
+      if (this.isEditMode) {
+        this.isEditMode = false
+        this.editedBookData = null
+      }
+      this.addUpdateBook(bookData)
       this.showModal = false
     },
+
     handleCloseForm() {
       this.showModal = false
     },
+
     handleRowDelete(bookId) {
       this.deleteBook(bookId)
     },
-    sortBooksByPublishingYear(books, ascending = true) {
+
+    handleRowEdit(editedBookData) {
+      this.isEditMode = true
+      this.editedBookData = editedBookData
+      this.showModal = true
+    },
+
+    sortBooksByPublishingYear(booksIdList, ascending = true) {
       let compareFunction
       if (ascending) {
-        compareFunction = (book1, book2) => {
-          if (book1.publishingYear > book2.publishingYear) {
+        compareFunction = (bookId1, bookId2) => {
+          if (bookId1.publishingYear > bookId2.publishingYear) {
             return 1
           }
-          if (book1.publishingYear < book2.publishingYear) {
+          if (bookId1.publishingYear < bookId2.publishingYear) {
             return -1
           }
           return 0
         }
       } else {
-        compareFunction = (book1, book2) => {
-          if (book1.publishingYear > book2.publishingYear) {
+        compareFunction = (bookId1, bookId2) => {
+          if (this.books[bookId1].publishingYear > this.books[bookId2].publishingYear) {
             return -1
           }
-          if (book1.publishingYear < book2.publishingYear) {
+          if (this.books[bookId1].publishingYear < this.books[bookId2].publishingYear) {
             return 1
           }
           return 0
         }
       }
-      return books.sort(compareFunction)
+      return booksIdList.sort(compareFunction)
     },
+
     isOdd(number) {
       return number % 2 === 0
     },
-    ...mapMutations(['addBook', 'deleteBook'])
+
+    ...mapMutations(['addUpdateBook', 'deleteBook'])
   }
 }
 </script>

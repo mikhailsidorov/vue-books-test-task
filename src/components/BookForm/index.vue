@@ -76,7 +76,7 @@
 
 <script>
 import { book as bookValidation } from '@/mixins/validation/'
-import uuid from 'node-uuid'
+import { v4 as uuidV4 } from 'node-uuid'
 
 export default {
   name: 'BookForm',
@@ -84,7 +84,6 @@ export default {
   data() {
     return {
       form: {
-        id: '',
         title: { value: '', touched: false },
         author: {
           firstName: { value: '', touched: false },
@@ -127,21 +126,26 @@ export default {
       const { value, touched } = this.form.releaseDate
       return !this.validateReleaseDate(value) && touched
     },
-    newBook() {
-      const book = {}
+    newBookData() {
+      const bookData = {
+        id: '',
+        book: {}
+      }
+      if (!this.editedBookData) {
+        bookData.id = uuidV4()
+      } else {
+        bookData.id = this.editedBookData.id
+      }
       for (let field of Object.keys(this.form)) {
-        if (field === 'id' && !this.form[field]) {
-          book[field] = uuid.v4()
-        }
         if (field === 'author') {
-          book[field] = {}
-          book[field].firstName = this.form[field].firstName.value
-          book[field].lastName = this.form[field].lastName.value
+          bookData.book[field] = {}
+          bookData.book[field].firstName = this.form[field].firstName.value
+          bookData.book[field].lastName = this.form[field].lastName.value
         } else {
-          book[field] = this.form[field].value
+          bookData.book[field] = this.form[field].value
         }
       }
-      return book
+      return bookData
     }
   },
   methods: {
@@ -150,7 +154,7 @@ export default {
     },
     handleSaveClick() {
       if (
-        !this.validateAuthorFirstName(this.form.title.value) ||
+        !this.validateTitle(this.form.title.value) ||
         !this.validateAuthorFirstName(this.form.author.firstName.value) ||
         !this.validateAuthorLastName(this.form.author.lastName.value) ||
         !this.validateNumberOfPages(this.form.numberOfPages.value) ||
@@ -160,7 +164,24 @@ export default {
       ) {
         return
       }
-      this.$emit('add-book', this.newBook)
+      this.$emit('save-book', this.newBookData)
+    }
+  },
+  props: {
+    editedBookData: {
+      type: Object
+    }
+  },
+  mounted() {
+    if (this.editedBookData && this.editedBookData.book) {
+      for (let key of Object.keys(this.editedBookData.book)) {
+        if (key === 'author') {
+          this.form[key].firstName.value = this.editedBookData.book[key].firstName
+          this.form[key].lastName.value = this.editedBookData.book[key].lastName
+        } else {
+          this.form[key].value = this.editedBookData.book[key]
+        }
+      }
     }
   }
 }
